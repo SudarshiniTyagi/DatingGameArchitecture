@@ -108,6 +108,8 @@ class GameServer(object):
 
 
     def play_game(self):
+        import random
+        
         self.weights, player_time_spent = self.timed_request(
             {'n': self.n},
             self.player_idx
@@ -117,6 +119,44 @@ class GameServer(object):
         "check weights validity"
 
         # TODO: Generate 20 random candidates and scores
+        # here it is a list of tuples(score,random candidate)
+        
+        '''
+        random_candidates=[]
+        for i in range(0,20):
+          rand_cand=[]
+          for j in range(0,self.n):
+            r=randInt(0,1)
+            rand_cand.append(r)
+
+          cscore=compute_score(rand_cand,self.weights)
+          random_candidates.append((cscore,rand_cand)
+          
+        self.first_candidate, matchmaker_time_spent = self.timed_request(
+            {'n': self.n,
+             'randomCandidateAndScores': random_candidates},
+            self.matchmaker_idx
+        )
+                                   
+        '''
+        '''
+        random_candidates={}
+        for i in range(0,20):
+          rand_cand=[]
+          for j in range(0,self.n):
+            r=randInt(0,1)
+            rand_cand.append(r)
+
+          cscore=compute_score(rand_cand,self.weights)
+          random_candidates[i]={'Score' : cscore ,'Attributes' : rand_cand}
+          
+        self.first_candidate, matchmaker_time_spent = self.timed_request(
+            {'n': self.n,
+             'randomCandidateAndScores': random_candidates},
+            self.matchmaker_idx
+        )
+        '''
+        
         self.first_candidate, matchmaker_time_spent = self.timed_request(
             {'n': self.n,
              'randomCandidateAndScores': """randomCandidates and scores(dict)"""},
