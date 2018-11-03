@@ -2,7 +2,7 @@ import random
 import copy
 from decimal import *
 
-class variables
+#class variables
   self.no_attributes
   self.candidate_history = []
 
