@@ -1,6 +1,7 @@
 import json
 from random import randint
 from time import time
+from decimal import *
 
 from hps.servers import SocketServer
 from websocket_server import WebsocketServer
@@ -67,7 +68,6 @@ class GameServer(object):
 
     def check_precision(self, candidate):
         # TODO: check if candidate has four or fewer digits of precision
-        from decimal import *
         getcontext().prec = 4
         
         for i in range(0,len(candidate)):
@@ -80,7 +80,6 @@ class GameServer(object):
     def check_weights_validity(self, orig_weights, cur_weights, prev_weights):
         # TODO: check if weights are valid wrt the first weights
         #check weights have atmost precision 2
-        from decimal import *
         getcontext().prec = 2
         
         for i in range(0,len(cur_weights)):
@@ -108,8 +107,6 @@ class GameServer(object):
 
 
     def play_game(self):
-        import random
-        
         self.weights, player_time_spent = self.timed_request(
             {'n': self.n},
             self.player_idx
