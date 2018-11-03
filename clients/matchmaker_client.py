@@ -32,7 +32,7 @@ class MatchMaker(Player):
 
     def my_candidate(self):
         """
-        PLACE YOUR PROBE ALGORITHM HERE
+        PLACE YOUR CANDIDATE GENERATION ALGORITHM HERE
         As the matchmaker, you have access to the number of attributes (self.n),
         initial random candidates and their scores (self.random_candidates_and_scores),
         score of each candidate (self.candidate_score) and clock time left.

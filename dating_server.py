@@ -19,6 +19,7 @@ class GameServer(object):
         self.candidate_history = []
         self.perfect_candidate_found = False
         self.maxScore = 0
+        self.previousCandidate = []
 
         self.player_time_left = self.matchmaker_time_left = 120
         self.web_server = None
@@ -97,7 +98,7 @@ class GameServer(object):
             # TODO: Print scores
             print("**********************************************")
 
-            if not self.perfect_candidate_found or iterations > 1 :
+            if not self.perfect_candidate_found:
                 score = self.compute_score(weights=new_weights, candidate=new_candidate)
 
                 if score == 1:
@@ -114,7 +115,7 @@ class GameServer(object):
 
 
                 new_candidate, matchmaker_time_spent = self.timed_request(
-                    {'score': score},
+                    {'candidate_score': {'candidate': new_candidate, 'score': score}},
                     self.trench_idx
                 )
 
