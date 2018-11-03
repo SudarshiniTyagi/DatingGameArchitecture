@@ -127,7 +127,7 @@ class GameServer(object):
             rand_cand.append(r)
 
           cscore=compute_score(rand_cand,self.weights)
-          random_candidates.append((cscore,rand_cand)
+          random_candidates.append((cscore,rand_cand))
           
         self.first_candidate, matchmaker_time_spent = self.timed_request(
             {'n': self.n,
