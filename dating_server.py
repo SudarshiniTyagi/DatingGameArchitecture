@@ -96,7 +96,7 @@ class GameServer(object):
         
         #check atmost 5% of weights changed from previous turn
         modified_weights=0
-        for i in range(0.self.n):
+        for i in range(0,self.n):
           if(cur_weights[i]!=prev_weights[i]):
             modified_weights+=1
        
