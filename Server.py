@@ -57,7 +57,7 @@ def playgame(self):
     #check player timer <120s
     
     if(not check_new_weight_validity(new_weights,orig_weights)):
-      return (infinity,"Inavlid Change to Weights from Player")
+      return (i,infinity,"Invalid Change to Weights from Player")
     
     score_current_candidate=dotpdt(new_weights,current_candidate)
     
