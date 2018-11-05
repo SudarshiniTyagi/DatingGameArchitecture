@@ -22,6 +22,7 @@ The player client has access to the following information:
 
 * `self.n` The number of attributes
 * `self.time_left` The amount of time remaining out of 120 seconds
+* `self.weight_history` A list of previous weights provided by player
 * `candidate_history` A list containing all of the previous candidates provided by the matchmaker
 
 ## Matchmaker Client
@@ -41,3 +42,4 @@ The matchmaker_client has access to the following information
 ## Scoring
 
 Each contestant will take a turn as the matchmaker and as the player. The winner is the contestant that finds and ideal (score = 1) candidate in the fewest number of iterations. If no contestant finds an ideal candidate as the matchmaker then the winner is the contestant the achieves the highest score as the matchmaker.
+
