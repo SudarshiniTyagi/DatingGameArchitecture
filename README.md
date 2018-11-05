@@ -4,6 +4,7 @@ This is the architecture for the [Dating Game](https://cs.nyu.edu/courses/fall18
 ## Running the game
 
 This architecture uses `python3.6`
+
 `cd` into this project and run `python run_game.py <n>` where n is the number of attributes no more than 200
 
 ## Player Client
@@ -37,6 +38,6 @@ The matchmaker_client has access to the following information
 * `self.random_candidates_and_scores` A dictionary containing the 20 randomly generated candidates and their scores
 * `self.prev_candidate` A dictionary of the previous candidate, containing their attributes, scores and iteration
 
-##Scoring
+## Scoring
 
 Each contestant will take a turn as the matchmaker and as the player. The winner is the contestant that finds and ideal (score = 1) candidate in the fewest number of iterations. If no contestant finds an ideal candidate as the matchmaker then the winner is the contestant the achieves the highest score as the matchmaker.
