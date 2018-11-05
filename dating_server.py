@@ -9,15 +9,13 @@ from websocket_server import WebsocketServer
 HOST = '127.0.0.1'
 PORT = 5000
 
-WEB_HOST = '127.0.0.1'
-WEB_PORT = 8000
-
 class GameServer(object):
-    def __init__(self, n=36):
-        self.n = n
+    def __init__(self,n):
+        self.n = int(n)
         self.iterations = 20
-        self.weights = [None]*n
+        self.weights = [None]*self.n
         self.candidate_history = []
+        self.score_history = []
         self.weight_history=[]
         self.perfect_candidate_found = False
         self.maxScore = 0
@@ -34,7 +32,7 @@ class GameServer(object):
         self.server.establish_client_connections()
         self.player_attributes = [json.loads(info) for info in self.server.receive_from_all()]
         self.player_idx = 0 if self.player_attributes[0]['is_player'] else 1
-        self.matchmaker_idx = 0 if self.player_attributes[0]['is_player'] else 1
+        self.matchmaker_idx = 1 if self.player_attributes[0]['is_player'] else 0
         self.play_game()
 
 
@@ -62,14 +60,14 @@ class GameServer(object):
     def compute_score(self, weights, candidate):
         # TODO: compute the dot product
         score = 0
-        for i in range(0,len(candidate)):
+        for i in range(len(candidate)):
           score+=weights[i]*candidate[i]
-        return score
+        return round(score,4)
 
     def check_precision(self, candidate):
         # TODO: check if candidate has four or fewer digits of precision
         getcontext().prec = 4
-        
+
         for i in range(0,len(candidate)):
           w=candidate[i]
           a=Decimal(w)/Decimal(1)
@@ -80,138 +78,133 @@ class GameServer(object):
     def check_weights_validity(self, orig_weights, cur_weights, prev_weights):
         # TODO: check if weights are valid wrt the first weights
         #check weights have atmost precision 2
+
         getcontext().prec = 2
-        
+
         for i in range(0,len(cur_weights)):
           w=cur_weights[i]
           a=Decimal(w)/Decimal(1)
           if((float)(a) != w):
             return False
-        
-        #check whether change of every wieght is in 20% range
+
+        #check whether change of every weight is in 20% range
         for i in range(0,self.n):
-          if(abs(cur_weights[i]-orig_weights[i])>0.2*orig_weights[i]):
+          if(abs(cur_weights[i]-orig_weights[i])>0.2*abs(orig_weights[i])):
             return False
-        
+
         #check atmost 5% of weights changed from previous turn
         modified_weights=0
-        for i in range(0,self.n):
+        for i in range(self.n):
           if(cur_weights[i]!=prev_weights[i]):
             modified_weights+=1
-       
+
         if(modified_weights>0.05*self.n):
           return False
-        
+
+        #check pos weights sum to 1, neg weights sum to -1
+        pos_sum = Decimal(0)
+        neg_sum = Decimal(0)
+
+        for w in cur_weights:
+            if w > 0:
+                pos_sum += Decimal(w)
+            else:
+                neg_sum += Decimal(w)
+
+        if pos_sum != 1:
+            return False
+        if neg_sum != -1:
+            return False
+
         return True
 
-
-
     def play_game(self):
+
         self.weights, player_time_spent = self.timed_request(
             {'n': self.n},
             self.player_idx
         )
-        #if(not check_weights_validity(self.weights,self.weights,self.weights)):
-        #  print("Invalid Weights provided by Player")  
-        "check weights validity"
+
+        if(not self.check_weights_validity(self.weights,self.weights,self.weights)):
+            raise ValueError('Invalid Weights provided by Player')
 
         # TODO: Generate 20 random candidates and scores
-        # here it is a list of tuples(score,random candidate)
-        
-        '''
-        random_candidates=[]
-        for i in range(0,20):
-          rand_cand=[]
-          for j in range(0,self.n):
-            r=randInt(0,1)
-            rand_cand.append(r)
-
-          cscore=compute_score(rand_cand,self.weights)
-          random_candidates.append((cscore,rand_cand))
-          
-        self.first_candidate, matchmaker_time_spent = self.timed_request(
-            {'n': self.n,
-             'randomCandidateAndScores': random_candidates},
-            self.matchmaker_idx
-        )
-                                   
-        '''
-        '''
         random_candidates={}
         for i in range(0,20):
-          rand_cand=[]
-          for j in range(0,self.n):
-            r=randInt(0,1)
-            rand_cand.append(r)
+            rand_cand=[]
+            for j in range(0,self.n):
+                r=randint(0,1)
+                rand_cand.append(r)
 
-          cscore=compute_score(rand_cand,self.weights)
-          random_candidates[i]={'Score' : cscore ,'Attributes' : rand_cand}
-          
-        self.first_candidate, matchmaker_time_spent = self.timed_request(
-            {'n': self.n,
-             'randomCandidateAndScores': random_candidates},
-            self.matchmaker_idx
-        )
-        '''
-        
-        self.first_candidate, matchmaker_time_spent = self.timed_request(
-            {'n': self.n,
-             'randomCandidateAndScores': """randomCandidates and scores(dict)"""},
-            self.matchmaker_idx
-        )
+            cscore=self.compute_score(rand_cand,self.weights)
+            random_candidates[i]={'Score' : cscore ,'Attributes' : rand_cand}
 
-        self.candidate_history.append(self.first_candidate)
-        self.decrement_time(player_time_spent, matchmaker_time_spent)
+        #print(random_candidates)
+        self.server.send_to(json.dumps({'n': self.n,'randomCandidateAndScores': random_candidates}), self.matchmaker_idx)
 
-        iterations = self.iterations
+        iterations = 0
         new_weights = self.weights
         self.weight_history.append(new_weights)
-        new_candidate = self.first_candidate
-        while iterations > 0:
+        new_candidate = []
+        score = 0
+
+        while iterations < self.iterations and self.perfect_candidate_found == False:
+
             self.check_time_left()
 
+            new_candidate, matchmaker_time_spent = self.timed_request(
+                {'prev_candidate': {'candidate': new_candidate, 'score': score, 'iter': iterations},
+                'time_left': self.matchmaker_time_left},
+                self.matchmaker_idx
+            )
+
+            if(not self.check_precision(new_candidate)):
+                 raise ValueError("Invalid precision of candidates")
+
+            self.candidate_history.append(new_candidate)
+
+
+            new_weights, player_time_spent = self.timed_request(
+                {'new_candidate': new_candidate,
+                'weight_history' : self.weight_history,
+                'time_left' : self.player_time_left},
+                self.player_idx
+            )
+
+            #check weights validity
+            if(not self.check_weights_validity(self.weights,new_weights,self.weight_history[-1])):
+              print(f'Invalid Weights provided by Player at iteration {iterations}. Maximum score so far: {self.maxScore}')
+              raise ValueError()
+
+            self.weight_history.append(new_weights)
+
+            score = self.compute_score(weights=new_weights, candidate=new_candidate)
+            self.score_history.append(score)
+
             print("**********************************************")
-            # TODO: Print scores
+            print("Iteration Number: ", iterations+1)
+            print("New Candidate: ", new_candidate)
+            print("New Weights: ", new_weights)
+            print("Score History: ", self.score_history)
             print("**********************************************")
+            print()
 
-            if not self.perfect_candidate_found:
-                score = self.compute_score(weights=new_weights, candidate=new_candidate)
+            if score > self.maxScore:
+                self.maxScore = score
 
-                if score == 1:
-                    self.perfect_candidate_found = True
-                    """Do other things that need to be done when game ends like breaking out of this loop"""
+            if score == 1:
+                self.perfect_candidate_found = True
 
+            self.decrement_time(player_time_spent, matchmaker_time_spent)
 
-                new_weights, player_time_spent = self.timed_request(
-                    {'candidate_history': self.candidate_history},
-                    self.player_idx
-                )
-                self.weight_history.append(new_weights)
-
-                """check weights validity"""
-                #if(not check_weights_validity(self.weights,new_weights,weight_history[-2])):
-                #  print("Invalid Weights provided by Player at iteration ", iterations, "  Maximum score so far : " self.maxScore)
-
-
-                new_candidate, matchmaker_time_spent = self.timed_request(
-                    {'candidate_score': {'candidate': new_candidate, 'score': score}},
-                    self.trench_idx
-                )
-
-                """check candidate validity"""
-                #if(not check_precision(new_candidate)):
-                #  print("Invalid Candidate provided by Matchmaker at iteration ", iterations, "  Maximum score so far : " self.maxScore)
-                
-
-                self.decrement_time(player_time_spent, matchmaker_time_spent)
-
-            iterations -= 1
-
+            iterations += 1
 
         self.server.send_to_all(
             json.dumps({
                 'game_over': True,
                 'final_score': self.maxScore,
-                'match_found': self.perfect_candidate_found
+                'match_found': self.perfect_candidate_found,
+                'num_iterations' : iterations
             })
         )
+
