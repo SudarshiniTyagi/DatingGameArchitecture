@@ -5,7 +5,9 @@ This is the architecture for the [Dating Game](https://cs.nyu.edu/courses/fall18
 
 This architecture uses `python3.6`
 
-`cd` into this project and run `python run_game.py <n>` where n is the number of attributes no more than 200
+`cd` into this project and run `python run_game.py <n> <random_file>` where n is the number of attributes no more than 200 and random_file is the location of the random candidates pickled file. For example:
+
+`python run_game.py 100 random_candidates/random_candidates1.pkl`
 
 ## Player Client
 
@@ -36,8 +38,9 @@ The matchmaker_client has access to the following information
 
 * `self.n` The number of attributes
 * `self.time_left` The amount of time remaining out of 120 seconds
-* `self.random_candidates_and_scores` A dictionary containing the 20 randomly generated candidates and their scores
+* `self.random_candidates_and_scores` A dictionary containing the 40 randomly generated candidates and their scores
 * `self.prev_candidate` A dictionary of the previous candidate, containing their attributes, scores and iteration
+
 
 ## Scoring
 
