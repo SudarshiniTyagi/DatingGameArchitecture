@@ -41,7 +41,6 @@ The matchmaker_client has access to the following information
 * `self.random_candidates_and_scores` A dictionary containing the 20 randomly generated candidates and their scores
 * `self.prev_candidate` A dictionary of the previous candidate, containing their attributes, scores and iteration
 
-If the matchmaker wants another choice of random candidates, you can change 
 
 ## Scoring
 
