@@ -21,6 +21,7 @@ class Player(Player):
             self.current_weights = new_weights
             response = json.loads(self.client.receive_data(size=32368))
             if 'game_over' in response:
+                print("######## GAME OVER ########")
                 if response['match_found']:
                     print("Perfect Candidate Found :D")
                     print("Total candidates used = ", response['num_iterations'])

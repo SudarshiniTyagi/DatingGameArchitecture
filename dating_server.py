@@ -11,9 +11,9 @@ PORT = 5000
 
 
 class GameServer(object):
-    def __init__(self, n, randomFile):
+    def __init__(self, n):
         self.n = int(n)
-        self.randomFile = randomFile
+        # self.randomFile = randomFile
         self.iterations = 20
         self.weights = [None] * self.n
         self.candidate_history = []
@@ -131,7 +131,11 @@ class GameServer(object):
         random_candidates = {}
 
         for i in range(0, 40):
-            rand_cand = self.load_obj(self.randomFile)
+            # rand_cand = self.load_obj(self.randomFile)
+            rand_cand = []
+            for j in range(0, self.n):
+                r = randint(0, 1)
+                rand_cand.append(r)
             cscore = self.compute_score(rand_cand, self.weights)
             random_candidates[i] = {'Score': cscore, 'Attributes': rand_cand}
 
