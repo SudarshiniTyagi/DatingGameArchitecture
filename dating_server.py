@@ -2,6 +2,7 @@ import json
 from decimal import *
 from random import randint
 from time import time
+import pickle
 
 from hps.servers import SocketServer
 
@@ -10,9 +11,10 @@ PORT = 5000
 
 
 class GameServer(object):
-    def __init__(self, n):
+    def __init__(self, n, randomFile):
         self.n = int(n)
-        self.iterations = 30
+        self.randomFile = randomFile
+        self.iterations = 20
         self.weights = [None] * self.n
         self.candidate_history = []
         self.score_history = []
@@ -110,6 +112,10 @@ class GameServer(object):
 
         return True
 
+    def load_obj(self, name):
+        with open(name, 'rb') as f:
+            return pickle.load(f)
+
     def play_game(self):
 
         self.weights, player_time_spent = self.timed_request(
@@ -120,14 +126,12 @@ class GameServer(object):
         if not self.check_weights_validity(self.weights, self.weights, self.weights):
             raise ValueError('Invalid Weights provided by Player')
 
-        # Generate 20 random candidates and scores
-        random_candidates = {}
-        for i in range(0, 20):
-            rand_cand = []
-            for j in range(0, self.n):
-                r = randint(0, 1)
-                rand_cand.append(r)
+        # Generate 40 random candidates and scores
 
+        random_candidates = {}
+
+        for i in range(0, 40):
+            rand_cand = self.load_obj(self.randomFile)
             cscore = self.compute_score(rand_cand, self.weights)
             random_candidates[i] = {'Score': cscore, 'Attributes': rand_cand}
 

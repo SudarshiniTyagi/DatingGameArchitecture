@@ -19,13 +19,14 @@ class Player(Player):
             new_weights = self.your_algorithm(0 if not response else self.candidate_history)
             self.client.send_data(json.dumps(new_weights))
             self.current_weights = new_weights
-            response = json.loads(self.client.receive_data(size=16184))
+            response = json.loads(self.client.receive_data(size=32368))
             if 'game_over' in response:
                 if response['match_found']:
-                    print("Perfect Candidate Found")
+                    print("Perfect Candidate Found :D")
                     print("Total candidates used = ", response['num_iterations'])
                 else:
-                    print("Sorry player :( Perfect candidate not found for you")
+                    print("Sorry player :( Perfect candidate not found for you, gotta live with ",
+                          response['final_score']*100, "% match... Sighhh")
                     print("Final Score of the best match = ", response['final_score'])
                 exit(0)
             else:

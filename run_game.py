@@ -23,14 +23,14 @@ def init_player(name):
 def main():
 
     n = sys.argv[1]
+    randomFile = sys.argv[2]
 
-    print(n)
     player_1 = Process(target=init_matchmaker, args=('Player Sam',))
     player_1.start()
     player_2 = Process(target=init_player, args=('Matchmaker Inav',))
     player_2.start()
 
-    controller = GameServer(n)
+    controller = GameServer(n, randomFile)
 
 if __name__ == '__main__':
     main()
