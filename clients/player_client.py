@@ -26,8 +26,8 @@ class Player(Player):
                     print("Perfect Candidate Found")
                     print("Total candidates used = ", response['num_iterations'])
                 else:
-                    print("Perfect candidate not found")
-                    print("Total candidates used = ", response['final_score'])
+                    print("Sorry player :( Perfect candidate not found for you")
+                    print("Final Score of the best match = ", response['final_score'])
                 exit(0)
             else:
                 self.time_left = response['time_left']

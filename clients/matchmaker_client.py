@@ -24,8 +24,8 @@ class MatchMaker(Player):
                     print("Perfect Candidate Found")
                     print("Total candidates used = ", response['num_iterations'])
                 else:
-                    print("Perfect candidate not found")
-                    print("Total candidates used = ", response['final_score'])
+                    print("Perfect candidate not found - you have failed the player")
+                    print("Total candidates used = ", response['total_candidates'])
                 exit(0)
             else:
                 self.prev_candidate = response['prev_candidate']

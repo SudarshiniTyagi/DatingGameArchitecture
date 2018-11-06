@@ -2,6 +2,7 @@ import json
 from random import randint
 from time import time
 from decimal import *
+from time import sleep
 
 from hps.servers import SocketServer
 from websocket_server import WebsocketServer
@@ -12,7 +13,7 @@ PORT = 5000
 class GameServer(object):
     def __init__(self,n):
         self.n = int(n)
-        self.iterations = 20
+        self.iterations = 30
         self.weights = [None]*self.n
         self.candidate_history = []
         self.score_history = []
@@ -149,7 +150,6 @@ class GameServer(object):
         score = 0
 
         while iterations < self.iterations and self.perfect_candidate_found == False:
-
             self.check_time_left()
 
             new_candidate, matchmaker_time_spent = self.timed_request(
@@ -204,7 +204,8 @@ class GameServer(object):
                 'game_over': True,
                 'final_score': self.maxScore,
                 'match_found': self.perfect_candidate_found,
-                'num_iterations' : iterations
+                'num_iterations' : iterations,
+                'total_candidates': self.candidate_history.__len__()
             })
         )
 
