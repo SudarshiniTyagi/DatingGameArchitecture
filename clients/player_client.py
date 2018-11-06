@@ -1,5 +1,4 @@
 import json
-from random import randint,uniform
 
 from clients.client import Player
 
@@ -34,8 +33,6 @@ class Player(Player):
                 self.candidate_history.append(response['new_candidate'])
                 self.weight_history = response['weight_history']
 
-
-
     def your_algorithm(self, candidate_history):
         """
         PLACE YOUR ALGORITHM HERE
@@ -48,9 +45,4 @@ class Player(Player):
         Also the sum of negative weights must be -1 and the sum of positive weights must be 1.
         """
 
-        #print(self.n)
-        #print(candidate_history)
-        #print(self.weight_history)
-        #print(self.time_left)
-
-        return [1,-1] + [0 for i in range(self.n - 2)]
+        return [1, -1] + [0 for i in range(self.n - 2)]

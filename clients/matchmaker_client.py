@@ -3,6 +3,7 @@ from random import random
 
 from clients.client import Player
 
+
 class MatchMaker(Player):
     def __init__(self, name):
         super(MatchMaker, self).__init__(name=name, is_player=False)
@@ -10,7 +11,7 @@ class MatchMaker(Player):
         print('Matchmaker', game_info)
         self.random_candidates_and_scores = game_info['randomCandidateAndScores']
         self.n = game_info['n']
-        self.prev_candidate = {'candidate': [], 'score': 0, 'iter':0}
+        self.prev_candidate = {'candidate': [], 'score': 0, 'iter': 0}
         self.time_left = 120
 
     def play_game(self):
@@ -46,9 +47,4 @@ class MatchMaker(Player):
         fewer digits of precision. The length of the array should be equal to the number of attributes (self.n)
         """
 
-        #print(self.n)
-        #print(self.random_candidates_and_scores)
-        #print(self.time_left)
-        #print(self.prev_candidate)
-
-        return [round(random(),4) for i in range(self.n)]
+        return [round(random(), 4) for i in range(self.n)]
