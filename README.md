@@ -7,7 +7,7 @@ This architecture uses `python3.6`
 
 `cd` into this project and run `python run_game.py <n> <random_file>` where n is the number of attributes no more than 200 and random_file is the location of the random candidates pickled file. For example:
 
-`python run_game.py 100 random_weights/random_weights1.pkl`
+`python run_game.py 100 random_candidates/random_candidates1.pkl`
 
 ## Player Client
 
