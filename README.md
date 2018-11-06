@@ -38,7 +38,7 @@ The matchmaker_client has access to the following information
 
 * `self.n` The number of attributes
 * `self.time_left` The amount of time remaining out of 120 seconds
-* `self.random_candidates_and_scores` A dictionary containing the 20 randomly generated candidates and their scores
+* `self.random_candidates_and_scores` A dictionary containing the 40 randomly generated candidates and their scores
 * `self.prev_candidate` A dictionary of the previous candidate, containing their attributes, scores and iteration
 
 
