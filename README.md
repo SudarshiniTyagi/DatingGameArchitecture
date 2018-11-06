@@ -5,9 +5,9 @@ This is the architecture for the [Dating Game](https://cs.nyu.edu/courses/fall18
 
 This architecture uses `python3.6`
 
-`cd` into this project and run `python run_game.py <n> <random_file>` where n is the number of attributes no more than 200 and random_file is the location of the random candidates pickled file. For example:
+`cd` into this project and run `python run_game.py <n>` where n is the number of attributes no more than 200. For example:
 
-`python run_game.py 100 random_candidates/random_candidates1.pkl`
+`python run_game.py 100`
 
 ## Player Client
 
