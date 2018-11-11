@@ -20,7 +20,7 @@ class Player(Player):
             new_weights = self.your_algorithm(0 if not response else self.candidate_history)
             self.client.send_data(json.dumps(new_weights))
             self.current_weights = new_weights
-            response = json.loads(self.client.receive_data(size=32368))
+            response = json.loads(self.client.receive_data(size=32368*2))
             if 'game_over' in response:
                 print("######## GAME OVER ########")
                 if response['match_found']:
@@ -48,7 +48,4 @@ class Player(Player):
         Also the sum of negative weights must be -1 and the sum of positive weights must be 1.
         """
 
-        #start = random.choice([[1,-1],[-1,1]])
-        v1 = [-.9,.9,-.1,.1] + [0 for i in range(self.n - 4)]
-        v2 = [-.89,.89,-.11,.11] + [0 for i in range(self.n - 2)]
-        return random.choice([v1,v2])
+        return [1, -1] + [0 for i in range(self.n - 2)]

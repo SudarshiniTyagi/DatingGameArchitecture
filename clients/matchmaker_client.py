@@ -7,7 +7,7 @@ from clients.client import Player
 class MatchMaker(Player):
     def __init__(self, name):
         super(MatchMaker, self).__init__(name=name, is_player=False)
-        game_info = json.loads(self.client.receive_data(size=32368))
+        game_info = json.loads(self.client.receive_data(size=32368*2))
         print('Matchmaker', game_info)
         self.random_candidates_and_scores = game_info['randomCandidateAndScores']
         self.n = game_info['n']
