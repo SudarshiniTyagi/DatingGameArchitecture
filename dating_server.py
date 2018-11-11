@@ -15,7 +15,7 @@ class GameServer(object):
         self.n = int(n)
         # self.randomFile = randomFile
         self.iterations = 20
-        self.weights = [None] * self.n
+        self.weights = None
         self.candidate_history = []
         self.score_history = []
         self.weight_history = []
@@ -43,9 +43,9 @@ class GameServer(object):
         stop = time()
         return vector, (stop - start)
 
-    def decrement_time(self, submarine_time_spent, trench_time_spent):
-        self.player_time_left -= submarine_time_spent
-        self.matchmaker_time_left -= trench_time_spent
+    def decrement_time(self, player_time_spent, matchmaker_time_spent):
+        self.player_time_left -= player_time_spent
+        self.matchmaker_time_left -= matchmaker_time_spent
 
     def check_time_left(self):
         if self.player_time_left < 0:
@@ -176,7 +176,8 @@ class GameServer(object):
 
             self.weight_history.append(new_weights)
 
-            score = self.compute_score(weights=new_weights, candidate=new_candidate)
+
+            score = max(self.compute_score(weights=new_weights, candidate=new_candidate),self.compute_score(weights=self.weights, candidate=new_candidate))
             self.score_history.append(score)
 
             print("**********************************************")

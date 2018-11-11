@@ -1,4 +1,5 @@
 import json
+import random
 
 from clients.client import Player
 
@@ -47,4 +48,7 @@ class Player(Player):
         Also the sum of negative weights must be -1 and the sum of positive weights must be 1.
         """
 
-        return [1, -1] + [0 for i in range(self.n - 2)]
+        #start = random.choice([[1,-1],[-1,1]])
+        v1 = [-.9,.9,-.1,.1] + [0 for i in range(self.n - 4)]
+        v2 = [-.89,.89,-.11,.11] + [0 for i in range(self.n - 2)]
+        return random.choice([v1,v2])
