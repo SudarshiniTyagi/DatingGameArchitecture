@@ -2,13 +2,15 @@ import json
 import random
 import math
 from collections import deque, namedtuple
+from decimal import *
 
 from .client import Player
 
 
 class Player(Player):
     def __init__(self):
-        super().__init__(name="BottyMcBotFacePlayer", is_player=True)
+        getcontext().prec = 6
+        super().__init__(name="BottyMcBotFace", is_player=True)
         game_info = json.loads(self.client.receive_data(size=32368*2))
         print('Player', game_info)
         self.n = game_info['n']
@@ -19,7 +21,6 @@ class Player(Player):
     def play_game(self):
         response = {}
         while True:
-            print(self.name)
             new_weights = self.your_algorithm(self.candidate_history)
             self.client.send_data(json.dumps(new_weights))
             self.current_weights = new_weights
@@ -45,7 +46,7 @@ class Player(Player):
             cand = self.generateFirst()
         else:
             cand = self.generateModified()
-        cand = [i / 100.0 for i in cand]
+        cand = [float(Decimal(i) / Decimal(100)) for i in cand]
         print(f"Candidate #{len(self.candidate_history) + 1}:", cand)
         return cand
 
@@ -76,36 +77,50 @@ class Player(Player):
         last = [i * 100 for i in self.weight_history[-1]]
         new = last[:]
 
-        diffs = [(last[i] * last_cand[i], i) for i in range(self.n) if first[i] > 0]
+        diffs = [(last[i] * last_cand[i], i) for i in range(self.n) if last[i] > 0]
         diffs = sorted(diffs, reverse=True)
 
         max_modified = math.floor(.05 * self.n)
         modified = 0
 
         while modified < max_modified and len(diffs) > 0:
-            diff, ind = diffs.pop(0)
+            _, ind = diffs.pop(0)
             inds_to_incr = []
 
             new_val = math.ceil(first[ind] * .8)
 
-            difference = abs(first[ind] - new_val)
+            difference = abs(last[ind] - new_val)
             if difference == 0:
                 continue
 
             for _, i in reversed(diffs):
-                new_incr_val = min(first[i] + difference, math.floor(first[i] * 1.2))
-                difference -= abs(new_incr_val - first[i])
+                new_incr_val = min(last[i] + difference, math.floor(first[i] * 1.2))
+                difference -= abs(new_incr_val - last[i])
                 inds_to_incr.append((i, new_incr_val))
                 if difference == 0:
                     break
 
             if len(inds_to_incr) + 1 + modified <= max_modified and difference == 0:
                 print(f"CHANGED INDEX {ind} SOMETHING")
+                temp = new[:]
                 modified += 1 + len(inds_to_incr)
+
                 for i, v in inds_to_incr:
-                    diffs.pop(i)
-                    new[i] = v
-                new[ind] = new_val
+                    temp[i] = v
+                temp[ind] = new_val
+
+                excluded = [i for i, v in inds_to_incr]
+                new_diffs = []
+                for i in range(len(diffs)):
+                    if i not in excluded:
+                        new_diffs.append(diffs[i])
+
+                pos_sum = sum([i for i in temp if i > 0])
+                neg_sum = sum([i for i in temp if i < 0])
+                if pos_sum == 100 and neg_sum == -100:
+                    new = temp
+
+                diffs = new_diffs
 
         # if not self.isValidModification([i / 100.0 for i in new]):
             # print("Warning: Not a valid candidate")

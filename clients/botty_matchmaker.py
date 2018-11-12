@@ -9,7 +9,7 @@ from clients.client import Player
 
 class MatchMaker(Player):
     def __init__(self):
-        super().__init__(name="BottyMcBotFaceMatchmaker", is_player=False)
+        super().__init__(name="BottyMcBotFace", is_player=False)
         game_info = json.loads(self.client.receive_data(size=32368*2))
         print('Matchmaker', game_info)
         self.random_candidates_and_scores = game_info['randomCandidateAndScores']
@@ -21,8 +21,8 @@ class MatchMaker(Player):
         self.my_prev_scores = []
 
     def play_game(self):
+        response = json.loads(self.client.receive_data())
         while True:
-            print(self.name)
             candidate = self.my_candidate()
             self.client.send_data(json.dumps(candidate))
             response = json.loads(self.client.receive_data(size=32368*2))
