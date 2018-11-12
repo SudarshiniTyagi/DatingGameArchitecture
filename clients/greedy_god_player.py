@@ -5,8 +5,8 @@ from clients.client import Player
 
 
 class Player(Player):
-    def __init__(self, name):
-        super(Player, self).__init__(name=name, is_player=True)
+    def __init__(self):
+        super(Player, self).__init__(name="Greedy god player", is_player=True)
         game_info = json.loads(self.client.receive_data(size=32368*2))
         print('Player', game_info)
         self.n = game_info['n']
@@ -47,5 +47,34 @@ class Player(Player):
         specified as decimal values having at most two digits to the right of the decimal point, e.g. 0.13 but not 0.134
         Also the sum of negative weights must be -1 and the sum of positive weights must be 1.
         """
+        if candidate_history == 0:
+            return self.__initial_parameters__()
+        else:
+            return self.__update_parameters__(candidate_history)
 
-        return [1, -1] + [0 for i in range(self.n - 2)]
+    def __initial_parameters__(self):
+        n = self.n
+        half_n = (n + 1) // 2
+        weights = [0.0] * n
+        if n < 100:
+            # Strategy 1
+            for i in range(100):
+                rand_idx1 = random.randint(0, half_n - 1)
+                rand_idx2 = random.randint(half_n, n - 1)
+                weights[rand_idx1] += 0.01
+                weights[rand_idx2] -= 0.01
+        else:
+            # Strategy 2
+            idx1, idx2 = (0, 0)
+            for i in range(100):
+                weights[idx1] += 0.01
+                weights[half_n + idx2] -= 0.01
+                idx1 = (idx1 + 1) % half_n
+                idx2 = (idx2 + 1) % (n - half_n)
+
+        random.shuffle(weights)
+        print(weights)
+        return [round(weights[i], 2) for i in range(n)]
+
+    def __update_parameters__(self, candidate_history):
+        return self.current_weights
